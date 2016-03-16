@@ -1,0 +1,56 @@
+<template>
+  <div id="app">
+    <hex-super-table>
+      <hex-super-table-filter placeholder="Type to filter"></hex-super-table-filter>
+
+      <hex-table sortable json='[{"Name":"James Blair","Location":"Dallas, TX"},{"Name":"Curtis Blackwell","Location":"Busan, KR"},{"Name":"Andrew Pennington","Location":"Kansas City, MO"}]'></hex-table>
+    </hex-super-table>
+  </div>
+
+  <hex-super-table>
+  <hex-super-table-filter placeholder="Type to filter"></hex-super-table-filter>
+
+  <hex-table sortable></hex-table>
+  <hex-table-to-json>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Mixes top-shelf bourbon with Coke</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>Curtis Blackwell</td>
+          <td><a href="https://www.youtube.com/watch?v=07So_lJQyqw">UNACCEPTABLE!</a></td>
+        </tr>
+        <tr>
+          <td>James Blair</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>Andrew Pennington</td>
+          <td>Yes</td>
+        </tr>
+      </tbody>
+    </table>
+  </hex-table-to-json>
+</hex-super-table>
+</template>
+
+<script>
+  import HexSuperTable       from './components/HexSuperTable.vue';
+  import HexSuperTableFilter from './components/HexSuperTableFilter.vue';
+  import HexTable            from './components/HexTable.vue';
+  import HexTableToJson      from './components/HexTableToJson.vue';
+
+  export default {
+    components: {
+      HexSuperTable,
+      HexSuperTableFilter,
+      HexTable,
+      HexTableToJson
+    }
+  }
+</script>
