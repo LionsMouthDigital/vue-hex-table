@@ -47,17 +47,14 @@
 </template>
 
 <script>
-  import HexSuperTable       from './components/HexSuperTable.vue';
-  import HexSuperTableFilter from './components/HexSuperTableFilter.vue';
-  import HexTable            from './components/HexTable.vue';
-  import HexTableToJson      from './components/HexTableToJson.vue';
+  import HexTable from './Component.vue';
 
   export default {
     components: {
-      HexSuperTable,
-      HexSuperTableFilter,
-      HexTable,
-      HexTableToJson
+      HexSuperTable:       HexTable.HexSuperTable,
+      HexSuperTableFilter: HexTable.HexSuperTableFilter,
+      HexTable:            HexTable.HexTable,
+      HexTableToJson:      HexTable.HexTableToJson,
     }
-  }
+  };
 </script>
