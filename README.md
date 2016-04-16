@@ -1,26 +1,22 @@
 # Hex Table
-
-> A Vue component for tables in the Hex Framework.
+*A Vue component for tables in the Hex Framework.*
 
 See [Hex](https://github.com/LionsMouthDigital/Hex#using-hex-vue-components-wo-the-hex-framework)
-for more information.
+for usage and more information.
 
 ## Build Setup
-
-``` bash
+```sh
 # install dependencies
 npm install
 
-# serve with hot reload at localhost:8080
-npm run dev
+# serve with BrowserSync
+grunt serve
 
 # build for production with minification
-npm run build
+grunt build
 ```
 
-For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
-
-# License
+## License
 [CC BY-SA 4.0][license]
 
 To simplify attribution, we've included a [humans.txt](humans.txt) template with our info pre-filled.
