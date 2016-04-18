@@ -1,6 +1,6 @@
 {
   "name": "vue-hex-table",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0-beta.6",
   "description": "A Vue component for tables in the Hex Framework from LionsMouth Digital.",
   "main": "dist/hex-table.js",
   "author": "Curtis Blackwell <blackwell.curtis@gmail.com>",
