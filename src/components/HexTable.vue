@@ -1,30 +1,28 @@
 <template>
-  <table :class="{ sortable: sortable }">
+  <table>
     <thead>
       <tr>
         <template v-if="sortable">
           <!-- Show sort indicators and add appropriate classes if sortable. -->
           <th
-            v-for  = "key in columns"
-            :class = "{ active: sortKey === key }"
-            @click = "sortBy(key)"
+            v-for  = "column in columns"
+            :class = "{ active: sortColumn == column }"
+            @click = "sortBy(column)"
           >
-            {{ key }}
-            <span class="sort-indicator" :class="sortOrders[key] > 0 ? 'asc' : 'desc'"></span>
+            {{ column | capitalize }}
+            <span class="sort-indicator" :class="sortOrders[column] > 0 ? 'asc' : 'dsc'"></span>
           </th>
         </template>
 
         <template v-else>
-          <th v-for="key in columns">{{ key }}</th>
+          <th v-for="column in columns">{{ column | capitalize }}</th>
         </template>
       </tr>
     </thead>
 
     <tbody>
-      <tr v-for="row in tableData | filterBy $parent.query | orderBy sortKey sortOrders[sortKey]">
-        <td v-for="column in columns">
-          {{{ row[column] }}}
-        </td>
+      <tr v-for="entry in filteredData">
+        <td v-for="column in columns" v-html="entry[column]"></td>
       </tr>
     </tbody>
   </table>
@@ -32,59 +30,110 @@
 
 <script>
   export default {
+    name: 'HexTable',
+
+
+    props: {
+      // Data to populate the table with. Accepts JavaScript array or JSON.
+      data: {
+        type:     [Array, String],
+        required: true,
+      },
+
+      // Keys to pull from the data. Only data with keys specified here are displayed.
+      columns: {
+        type:     Array,
+        required: true,
+      },
+
+      // Key from the Vue object's data to filter by.
+      filterKey: String,
+
+      // Custom filter method. Default shows only rows containing `filterKey` (case-insensitive).
+      filterMethod: {
+        type:    Function,
+        default: (data, filterKey) => {
+          return data.filter((row) => {
+            return Object.keys(row).some((key) => {
+              return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
+            });
+          });
+        },
+      },
+
+      // Whether to make the table sortable.
+      sortable: Boolean,
+    },
+
+
     data() {
+      let sortOrders = {};
+
+      this.columns.forEach((key) => {
+        sortOrders[key] = 1;
+      });
+
       return {
-        sortOrders: {},
-        tableData: this.json ? JSON.parse(this.json) : [],
+        sortColumn: '',
+        sortOrders: sortOrders
+      };
+    },
+
+
+    computed: {
+      /**
+       * Filter and sort data.
+       *
+       * @return {Array}
+       */
+      filteredData() {
+        let sortColumn = this.sortColumn;
+        let filterKey  = this.filterKey && this.filterKey.toLowerCase();
+        let order      = this.sortOrders[sortColumn] || 1;
+        let data       = typeof this.data === 'string' ? JSON.parse(this.data) : this.data;
+
+        // Filter data.
+        if (filterKey) {
+          data = this.filterMethod(data, filterKey);
+        }
+
+        // Sort data.
+        if (sortColumn) {
+          data = data.slice().sort((a, b) => {
+            a = a[sortColumn];
+            b = b[sortColumn];
+
+            return (a === b ? 0 : a > b ? 1 : -1) * order;
+          });
+        }
+
+        return data;
       }
     },
 
-    ready() {
-      this.setSortOrders();
-    },
-
-    props: {
-      json:      String,
-      sortable:  Boolean,
-      sortKey:   String,
-    },
-
-    computed: {
-      columns() {
-        // Snag the keys from the first row (index) of `tableData`
-        return this.tableData.length ? Object.keys(this.tableData[0]) : [];
-      },
-    },
-
-    watch: {
-      // We can't set `sortOrders` until after setting `tableData` when using `hex-table-to-json`.
-      columns() {
-        this.setSortOrders();
-      },
-    },
 
     methods: {
       /**
-       * Sort table rows.
+       * Invert the sort order for the specified column.
        *
-       * @author Curtis Blackwell
-       * @param  {string} key The column to sort by.
-       * @return {void}
+       * @param {String} column Column to sort by.
        */
-      sortBy(key) {
-        this.sortKey         = key;
-        this.sortOrders[key] = this.sortOrders[key] * -1;
+      sortBy(column) {
+        this.sortColumn         = column;
+        this.sortOrders[column] = this.sortOrders[column] * -1;
       },
+    },
 
-      setSortOrders() {
-        if (this.columns.length) {
-          var sortOrders = {};
-          this.columns.forEach(function(key) {
-            sortOrders[key] = 1;
-          });
 
-          this.sortOrders = sortOrders;
-        }
+    filters: {
+      /**
+       * Capitalize the first character in a string.
+       *
+       * @param  {String} str
+       * @return {String}
+       */
+      capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
       },
     },
   }

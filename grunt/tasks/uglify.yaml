@@ -1,9 +1,0 @@
-build:
-  src: 'dist/<%= s.componentName %>.js'
-  dest: 'dist/<%= s.componentName %>.min.js'
-  options:
-    compress:
-      drop_console: true
-    sourceMap: true
-    # Vue doesn't support IE8; no point in not screwing it.
-    screwIE8: true
