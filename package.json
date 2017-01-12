@@ -1,7 +1,7 @@
 {
   "name": "vue-hex-table",
   "main": "src/HexTable.js",
-  "version": "1.0.0-beta.6",
+  "version": "1.0.0-rc",
   "description": "A Vue.js project",
   "author": "Curtis Blackwell <blackwell.curtis@gmail.com>",
   "scripts": {
