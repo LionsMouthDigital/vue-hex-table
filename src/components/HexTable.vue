@@ -10,7 +10,7 @@
             @click = "sortBy(column)"
           >
             {{ column | capitalize }}
-            <span class="sort-indicator" :class="sortOrders[column] > 0 ? 'asc' : 'dsc'"></span>
+            <span class="sort-indicator" :class="sortOrders[column] > 0 ? 'asc' : 'desc'"></span>
           </th>
         </template>
 
