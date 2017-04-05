@@ -1,81 +1,81 @@
 <template>
-  <table>
-    <thead>
-      <tr>
-        <template v-if="sortable">
-          <!-- Show sort indicators and add appropriate classes if sortable. -->
-          <th
-            v-for  = "column in columns"
-            :class = "{ active: sortColumn == column }"
-            @click = "sortBy(column)"
-          >
-            {{ column | capitalize }}
-            <span class="sort-indicator" :class="sortOrders[column] > 0 ? 'asc' : 'desc'"></span>
-          </th>
-        </template>
+  <div class="hex-table">
+    <input v-model="filter" v-if="filterable" type="search" class="text-like" :placeholder="placeholder">
 
-        <template v-else>
-          <th v-for="column in columns">{{ column | capitalize }}</th>
-        </template>
-      </tr>
-    </thead>
+    <table>
+      <thead>
+        <tr>
+          <template v-if="sortable">
+            <th
+              v-for  = "column in columns"
+              @click = "sortBy(column)"
+              :class = "sortColumn === column ? 'active' : ''"
+            >
+              {{ startCase(column) }}
+              <span class="sort-indicator" :class="sortOrders[column] > 0 ? 'asc' : 'desc'"></span>
+            </th>
+          </template>
 
-    <tbody>
-      <tr v-for="entry in filteredData">
-        <td v-for="column in columns" v-html="entry[column]"></td>
-      </tr>
-    </tbody>
-  </table>
+          <template v-else>
+            <th v-for="column in columns" v-text="startCase(column)"></th>
+          </template>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr v-for="item in filteredItems">
+          <td v-for="column in columns" :class="item[column].class" v-html="item[column].value"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
+
+
+
 <script>
+  import {startCase} from 'lodash';
+  import Mixins      from 'vue-hex-mixins';
+
   export default {
-    name: 'HexTable',
+    name:   'HexTable',
+    mixins: [Mixins.Hydratable],
 
 
     props: {
-      // Data to populate the table with. Accepts JavaScript array or JSON.
-      data: {
-        type:     [Array, String],
-        required: true,
+      filterable: {
+        type:    Boolean,
+        default: true,
       },
 
-      // Keys to pull from the data. Only data with keys specified here are displayed.
-      columns: {
-        type:     Array,
-        required: true,
-      },
-
-      // Key from the Vue object's data to filter by.
-      filterKey: String,
-
-      // Custom filter method. Default shows only rows containing `filterKey` (case-insensitive).
+      // Custom filter method. Default shows only rows containing `filter` (case-insensitive).
       filterMethod: {
         type:    Function,
-        default: (data, filterKey) => {
+        default: (data, filter) => {
           return data.filter((row) => {
-            return Object.keys(row).some((key) => {
-              return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
+            return Object.keys(row).some((column) => {
+              return String(row[column].value).toLowerCase().indexOf(filter) > -1;
             });
           });
         },
       },
 
-      // Whether to make the table sortable.
-      sortable: Boolean,
+      placeholder: String,
+
+      sortable: {
+        type:    Boolean,
+        default: true,
+      }
     },
 
 
     data() {
-      let sortOrders = {};
-
-      this.columns.forEach((key) => {
-        sortOrders[key] = 1;
-      });
-
       return {
+        columns:    [],
+        filter:     '',
         sortColumn: '',
-        sortOrders: sortOrders
+        sortOrders: {},
       };
     },
 
@@ -86,29 +86,32 @@
        *
        * @return {Array}
        */
-      filteredData() {
+      filteredItems() {
         let sortColumn = this.sortColumn;
-        let filterKey  = this.filterKey && this.filterKey.toLowerCase();
+        let filter     = this.filter && this.filter.toLowerCase();
         let order      = this.sortOrders[sortColumn] || 1;
-        let data       = typeof this.data === 'string' ? JSON.parse(this.data) : this.data;
+        let data       = this.items;
 
         // Filter data.
-        if (filterKey) {
-          data = this.filterMethod(data, filterKey);
+        if (filter) {
+          data = this.filterMethod(data, filter);
         }
 
         // Sort data.
         if (sortColumn) {
           data = data.slice().sort((a, b) => {
-            a = a[sortColumn];
-            b = b[sortColumn];
+            a = a[sortColumn].sort || a[sortColumn].value;
+            b = b[sortColumn].sort || b[sortColumn].value;
+
+            a = typeof a === 'string' ? a.toLowerCase() : a;
+            b = typeof b === 'string' ? b.toLowerCase() : b;
 
             return (a === b ? 0 : a > b ? 1 : -1) * order;
           });
         }
 
         return data;
-      }
+      },
     },
 
 
@@ -122,19 +125,30 @@
         this.sortColumn         = column;
         this.sortOrders[column] = this.sortOrders[column] * -1;
       },
-    },
 
-
-    filters: {
       /**
-       * Capitalize the first character in a string.
+       * Convert a string to start case.
        *
-       * @param  {String} str
-       * @return {String}
+       * @author Curtis Blackwell
+       * @param  {string} string
+       * @return {string}
        */
-      capitalize(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
+      startCase(string) {
+        return startCase(string);
       },
     },
-  }
+
+
+    created() {
+      // Figure the columns out based on hydrated data.
+      this.columns = Object.keys(this.items[0]);
+
+      // Set sort orders for each column.
+      let sortOrders = {};
+      this.columns.forEach((key) => {
+        sortOrders[key] = 1;
+      });
+      this.sortOrders = sortOrders;
+    },
+  };
 </script>
