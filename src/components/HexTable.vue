@@ -1,5 +1,5 @@
 <template>
-  <div class="hex-table">
+  <div class="hex-table" :class="sortable ? 'v-sortable' : ''">
     <input v-model="filter" v-if="filterable" type="search" class="text-like" :placeholder="placeholder">
 
     <table>
