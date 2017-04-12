@@ -6,7 +6,7 @@
       </div>
     </slot>
 
-    <template v-show="items.length">
+    <template v-if="items.length">
       <input v-model="filter" v-if="filterable" type="search" class="text-like" :placeholder="placeholder">
 
       <table>
