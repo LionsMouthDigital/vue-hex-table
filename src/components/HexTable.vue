@@ -1,33 +1,41 @@
 <template>
   <div class="hex-table" :class="sortable ? 'v-sortable' : ''">
-    <input v-model="filter" v-if="filterable" type="search" class="text-like" :placeholder="placeholder">
+    <slot name="empty" v-if="!loading && !items.length">
+      <div class="message v-info">
+        <p>Sorry, but the table has no data.</p>
+      </div>
+    </slot>
 
-    <table>
-      <thead>
-        <tr>
-          <template v-if="sortable">
-            <th
-              v-for  = "column in columns"
-              @click = "sortBy(column)"
-              :class = "sortColumn === column ? 'active' : ''"
-            >
-              {{ startCase(column) }}
-              <span class="sort-indicator" :class="sortOrders[column] > 0 ? 'asc' : 'desc'"></span>
-            </th>
-          </template>
+    <template v-show="items.length">
+      <input v-model="filter" v-if="filterable" type="search" class="text-like" :placeholder="placeholder">
 
-          <template v-else>
-            <th v-for="column in columns" v-text="startCase(column)"></th>
-          </template>
-        </tr>
-      </thead>
+      <table>
+        <thead>
+          <tr>
+            <template v-if="sortable">
+              <th
+                v-for  = "column in columns"
+                @click = "sortBy(column)"
+                :class = "sortColumn === column ? 'active' : ''"
+              >
+                {{ startCase(column) }}
+                <span class="sort-indicator" :class="sortOrders[column] > 0 ? 'asc' : 'desc'"></span>
+              </th>
+            </template>
 
-      <tbody>
-        <tr v-for="item in filteredItems">
-          <td v-for="column in columns" :class="item[column].class" v-html="item[column].value"></td>
-        </tr>
-      </tbody>
-    </table>
+            <template v-else>
+              <th v-for="column in columns" v-text="startCase(column)"></th>
+            </template>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr v-for="item in filteredItems">
+            <td v-for="column in columns" :class="item[column].class" v-html="item[column].value"></td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
   </div>
 </template>
 
@@ -76,6 +84,7 @@
         filter:     '',
         sortColumn: '',
         sortOrders: {},
+        unwatch:    false,
       };
     },
 
@@ -116,6 +125,23 @@
 
 
     methods: {
+      setUp() {
+        // Figure the columns out based on hydrated data.
+        this.columns = Object.keys(this.items[0]);
+
+        // Set sort orders for each column.
+        let sortOrders = {};
+        this.columns.forEach((key) => {
+          sortOrders[key] = 1;
+        });
+        this.sortOrders = sortOrders;
+
+        // Prevent re-running this method.
+        if (this.unwatch) {
+          this.unwatch();
+        }
+      },
+
       /**
        * Invert the sort order for the specified column.
        *
@@ -140,15 +166,15 @@
 
 
     created() {
-      // Figure the columns out based on hydrated data.
-      this.columns = Object.keys(this.items[0]);
+      if (this.items.length) {
+        this.setUp();
+        return;
+      }
 
-      // Set sort orders for each column.
-      let sortOrders = {};
-      this.columns.forEach((key) => {
-        sortOrders[key] = 1;
+      // Set a watcher and unwatcher in case items are hydrated later.
+      this.unwatch = this.$watch('items', () => {
+        this.setUp();
       });
-      this.sortOrders = sortOrders;
     },
   };
 </script>

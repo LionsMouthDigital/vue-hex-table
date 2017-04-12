@@ -1,6 +1,14 @@
 <template>
   <div id="app">
     <hex-table hydrate-key="one"></hex-table>
+    <hex-table hydrate-key="empty">
+      <div slot="empty">
+        <h1>Sorry, but&hellip;</h1>
+        <p>
+          No results.
+        </p>
+      </div>
+    </hex-table>
   </div>
 </template>
 
@@ -60,6 +68,8 @@
         },
       },
     ],
+
+    empty: [],
   };
 
   export default {
