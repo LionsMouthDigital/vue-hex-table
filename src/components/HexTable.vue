@@ -1,5 +1,7 @@
 <template>
   <div class="hex-table" :class="sortable ? 'v-sortable' : ''">
+    <slot name="loadingIndicator" v-if="loading"></slot>
+
     <slot name="empty" v-if="!loading && !items.length">
       <div class="message v-info">
         <p>Sorry, but the table has no data.</p>
