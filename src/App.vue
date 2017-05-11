@@ -1,15 +1,28 @@
 <template>
-  <div id="app">
-    <hex-table hydrate-key="one"></hex-table>
+  <div class="container">
+    <h1>Hex Table</h1>
+    <h2>Sort/Filter</h2>
+    <hex-table sticky-head placeholder="Filter shapes" hydrate-key="one"></hex-table>
+
+    <h2>Empty state</h2>
     <hex-table hydrate-key="empty">
       <img :src="loader" slot="loadingIndicator">
       <div slot="empty">
-        <h1>Sorry, but&hellip;</h1>
+        <h3>Sorry, but&hellip;</h3>
         <p>
           No results.
         </p>
       </div>
     </hex-table>
+
+    <hr>
+
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
+    <p>Incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.</p>
+    <p>Exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure.</p>
+    <p>Dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+    <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt.</p>
+    <p>Mollit anim id est laborum.</p>
   </div>
 </template>
 
@@ -87,3 +100,30 @@
     },
   }
 </script>
+
+<style>
+  .container {
+    width: 300px;
+  }
+
+  table,
+  input {
+    width: 100%;
+  }
+
+  thead {
+    background-color: #fff;
+  }
+
+  th:first-child {
+    text-align: left;
+  }
+
+  th:last-child {
+    text-align: right;
+  }
+
+  p {
+    font-size: 2rem;
+  }
+</style>

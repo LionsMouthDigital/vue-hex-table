@@ -76,7 +76,9 @@
       sortable: {
         type:    Boolean,
         default: true,
-      }
+      },
+
+      stickyHead: Boolean,
     },
 
 
@@ -142,6 +144,12 @@
         if (this.unwatch) {
           this.unwatch();
         }
+
+        if (this.stickyHead) {
+          setTimeout(() => {
+            this.stickittodamaniosis()
+          }, 1);
+        }
       },
 
       /**
@@ -163,6 +171,42 @@
        */
       startCase(string) {
         return startCase(string);
+      },
+
+      /**
+       * Stick the table's head to the top of the window when scrolling within the right range.
+       *
+       * @author Curtis Blackwell
+       * @return {void}
+       */
+      stickittodamaniosis() {
+        let table   = this.$el.querySelector('table');
+        let head    = table.querySelector('thead');
+        let headers = head.querySelectorAll('th');
+        // Figure out range where the head should stick.
+        let min     = table.getBoundingClientRect().top;
+        let max     = table.getBoundingClientRect().bottom;
+
+        // Set style values that have no effect until the head is stuck now.
+        head.style.left = head.getBoundingClientRect().left + 'px';
+        head.style.top  = 0;
+        headers.forEach((header) => {
+          header.style.width = header.offsetWidth + 'px';
+        });
+
+        // Create scroll listener.
+        document.onscroll = () => {
+          let offset = window.pageYOffset;
+          if (min <= offset && offset <= max) {
+            // Stick head to top if within range.
+            table.style.paddingTop = head.offsetHeight + 'px';
+            head.style.position    = 'fixed';
+          } else if (offset < min || max < offset) {
+            // Return to normal if outside of range.
+            table.style.paddingTop = null;
+            head.style.position    = null;
+          }
+        };
       },
     },
 
