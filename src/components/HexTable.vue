@@ -180,18 +180,23 @@
        * @return {void}
        */
       stickittodamaniosis() {
-        let table   = this.$el.querySelector('table');
-        let head    = table.querySelector('thead');
-        let headers = head.querySelectorAll('th');
+        const table          = this.$el.querySelector('table');
+        const head           = table.querySelector('thead');
         // Figure out range where the head should stick.
-        let min     = table.getBoundingClientRect().top;
-        let max     = table.getBoundingClientRect().bottom;
+        const min            = table.getBoundingClientRect().top;
+        const max            = table.getBoundingClientRect().bottom;
+        const tableMarginTop = window.getComputedStyle(table).marginTop.replace('px', '');
+        console.log(tableMarginTop);
 
         // Set style values that have no effect until the head is stuck now.
         head.style.left = head.getBoundingClientRect().left + 'px';
         head.style.top  = 0;
-        headers.forEach((header) => {
+        head.querySelectorAll('th').forEach((header) => {
           header.style.width = header.offsetWidth + 'px';
+        });
+        // Set the width for only the first row of cells since the rest will fall in line.
+        table.querySelectorAll('tbody tr:first-child td').forEach((cell) => {
+          cell.style.width = cell.offsetWidth + 'px';
         });
 
         // Create scroll listener.
@@ -199,12 +204,12 @@
           let offset = window.pageYOffset;
           if (min <= offset && offset <= max) {
             // Stick head to top if within range.
-            table.style.paddingTop = head.offsetHeight + 'px';
-            head.style.position    = 'fixed';
+            table.style.marginTop = parseInt(tableMarginTop) + parseInt(head.offsetHeight) + 'px';
+            head.style.position   = 'fixed';
           } else if (offset < min || max < offset) {
             // Return to normal if outside of range.
-            table.style.paddingTop = null;
-            head.style.position    = null;
+            table.style.marginTop = null;
+            head.style.position   = null;
           }
         };
       },
