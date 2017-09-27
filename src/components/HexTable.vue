@@ -186,7 +186,6 @@
         const min            = table.getBoundingClientRect().top;
         const max            = table.getBoundingClientRect().bottom;
         const tableMarginTop = window.getComputedStyle(table).marginTop.replace('px', '');
-        console.log(tableMarginTop);
 
         // Set style values that have no effect until the head is stuck now.
         head.style.left = head.getBoundingClientRect().left + 'px';
