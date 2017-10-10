@@ -32,8 +32,13 @@
         </thead>
 
         <tbody>
-          <tr v-for="item in filteredItems">
-            <td v-for="column in columns" :class="item[column].class" v-html="item[column].value"></td>
+          <tr v-for="item in items">
+            <td
+              v-for  = "column in columns"
+              :class = "item[column].class"
+              v-html = "item[column].value"
+              v-show = "filteredItems.indexOf(item) > -1"
+            ></td>
           </tr>
         </tbody>
       </table>
