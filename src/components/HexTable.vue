@@ -105,27 +105,12 @@
        * @return {Array}
        */
       filteredItems() {
-        let sortColumn = this.sortColumn;
-        let filter     = this.filter && this.filter.toLowerCase();
-        let order      = this.sortOrders[sortColumn] || 1;
-        let data       = this.items;
+        let filter = this.filter && this.filter.toLowerCase();
+        let data   = this.items;
 
         // Filter data.
         if (filter) {
           data = this.filterMethod(data, filter);
-        }
-
-        // Sort data.
-        if (sortColumn) {
-          data = data.slice().sort((a, b) => {
-            a = a[sortColumn].sort || a[sortColumn].value;
-            b = b[sortColumn].sort || b[sortColumn].value;
-
-            a = typeof a === 'string' ? a.toLowerCase() : a;
-            b = typeof b === 'string' ? b.toLowerCase() : b;
-
-            return (a === b ? 0 : a > b ? 1 : -1) * order;
-          });
         }
 
         return data;
@@ -163,8 +148,21 @@
        * @param {String} column Column to sort by.
        */
       sortBy(column) {
-        this.sortColumn         = column;
-        this.sortOrders[column] = this.sortOrders[column] * -1;
+        this.sortColumn          = column;
+        this.sortOrders[column] *= -1;
+
+        let order = this.sortOrders[column];
+
+        // Sort data.
+        this.items = this.items.slice().sort((a, b) => {
+          a = a[column].sort || a[column].value;
+          b = b[column].sort || b[column].value;
+
+          a = typeof a === 'string' ? a.toLowerCase() : a;
+          b = typeof b === 'string' ? b.toLowerCase() : b;
+
+          return (a === b ? 0 : a > b ? 1 : -1) * order;
+        });
       },
 
       /**
